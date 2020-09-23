@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: com.company.Main
+Agent-Class: com.company.Agent
+Can-Retransform-Classes: true
