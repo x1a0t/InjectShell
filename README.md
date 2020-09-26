@@ -1,2 +1,6 @@
+
 # InjectShell
-Copy from [this repo](https://github.com/rebeyond/memShell)
+Copy from [rebeyond/memShell](https://github.com/rebeyond/memShell)
+
+## Description
+Just for learning!
